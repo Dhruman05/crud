@@ -40,9 +40,8 @@ public class UserController {
             return userService.loginUser(userEntityDTO);
         }
     }
-
-    @PostMapping("/forgot")
-    public Response forgotPassword(@RequestBody UserEntityDTO userEntityDTO){
-        return null;
+    @GetMapping("/verify")
+    public Response verifyUser(@RequestParam("email") String email,@RequestParam("password") String password){
+        return userService.verifyUser(email, password);
     }
 }

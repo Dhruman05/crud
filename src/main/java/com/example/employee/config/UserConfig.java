@@ -19,8 +19,7 @@ public class UserConfig {
     public CustomUserDetailService customUserDetailService;
     @Autowired
     JwtFilter jwtFilter;
-    @Autowired
-    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,8 +30,9 @@ public class UserConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable().authorizeHttpRequests().requestMatchers("/user/**").permitAll()
                 .requestMatchers("/manager/**").authenticated().requestMatchers("/employee/**").authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().build();
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
 
     }
 

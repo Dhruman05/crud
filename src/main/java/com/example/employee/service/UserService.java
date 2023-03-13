@@ -9,5 +9,5 @@ public interface UserService {
     public Response registerUser(UserEntityDTO userEntityDTO);
     public Response updateUser(UserEntityDTO userEntityDTO,String userEmail);
     public Response loginUser(UserEntityDTO userEntityDTO);
-    public Response forgotPassword(UserEntityDTO userEntityDTO);
+    public Response verifyUser(String email,String password);
 }

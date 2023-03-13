@@ -1,10 +1,8 @@
 package com.example.employee.util;
 
 import com.example.employee.dto.UserEntityDTO;
-import com.example.employee.exception.AccessDeniedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

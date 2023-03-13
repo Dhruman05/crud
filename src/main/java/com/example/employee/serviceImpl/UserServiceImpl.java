@@ -62,9 +62,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response forgotPassword(UserEntityDTO userEntityDTO) {
-        return null;
+    public Response verifyUser(String email, String password) {
+        Optional<UserEntity> existingData = userRepository.findByEmail(email);
+        if (existingData.isPresent()) {
+            UserEntity user = existingData.get();
+            if (user.getUserPassword().equalsIgnoreCase(password)) {
+                user.setIs_verified(true);
+                userRepository.save(user);
+            }
+            return new Response("200", "User verified successfully", null);
+        } else {
+            throw new UserNotFoundException("User not found");
+        }
     }
-
-
 }

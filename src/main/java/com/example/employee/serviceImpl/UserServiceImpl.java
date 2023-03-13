@@ -10,9 +10,9 @@ import com.example.employee.service.UserService;
 import com.example.employee.util.JwtUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,12 +21,15 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public Response registerUser(UserEntityDTO userEntityDTO) {
         UserEntity userEntity = new UserEntity();
         Optional<UserEntity> existingData = userRepository.findByEmail(userEntityDTO.getUserEmail());
         if (!existingData.isPresent()) {
+            userEntity.setUserPassword(passwordEncoder.encode(userEntity.getUserPassword()));
             BeanUtils.copyProperties(userEntityDTO, userEntity);
             userEntity.setIs_verified(false);
             userRepository.save(userEntity);

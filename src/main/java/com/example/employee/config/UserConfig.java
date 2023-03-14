@@ -30,10 +30,8 @@ public class UserConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable().authorizeHttpRequests().requestMatchers("/user/**").permitAll()
                 .requestMatchers("/manager/**").authenticated().requestMatchers("/employee/**").authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
-
     }
 
     public void configure(AuthenticationManagerBuilder auth) throws Exception {

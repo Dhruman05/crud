@@ -10,6 +10,7 @@ import com.example.employee.service.UserService;
 import com.example.employee.util.JwtUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,15 +62,15 @@ public class UserServiceImpl implements UserService {
             return new Response("400", "Credentials are wrong", null);
         }
         String token = jwtUtil.generateJwt(userEntityDTO);
-        return new Response("200","user logged in and token generated",token);
+        return new Response("200", "user logged in and token generated", token);
     }
 
     @Override
-    public Response verifyUser(String email, String password) {
-        Optional<UserEntity> existingData = userRepository.findByEmail(email);
+    public Response verifyUser(String userEmail, String userPassword) {
+        Optional<UserEntity> existingData = userRepository.findByEmail(userEmail);
         if (existingData.isPresent()) {
             UserEntity user = existingData.get();
-            if (user.getUserPassword().equalsIgnoreCase(password)) {
+            if (user.getUserPassword().equalsIgnoreCase(userPassword)) {
                 user.setIs_verified(true);
                 userRepository.save(user);
             }
@@ -78,4 +79,25 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User not found");
         }
     }
+
+    @Override
+    public Response resetPassword(String userEmail, String oldPassword, String newPassword) {
+        Optional<UserEntity> existingData = userRepository.findByEmail(userEmail);
+        if (existingData.isPresent()) {
+            UserEntity user = existingData.get();
+            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+            boolean isPasswordMatches = bcrypt.matches(oldPassword, user.getUserPassword());
+            if (isPasswordMatches) {
+                user.setUserPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+                return new Response("200", "password reset successfully", null);
+            } else {
+                return new Response("400", "old password is not matching", null);
+            }
+        } else {
+            return new Response("404", "user not found", null);
+        }
+    }
+
+
 }

@@ -27,21 +27,26 @@ public class UserController {
     }
 
     @PutMapping("/update/{email}")
-    public Response updateUser(@Valid @RequestBody UserEntityDTO userEntityDTO, @PathVariable("email") String userEmail) throws Exception {
+    public Response updateUser(@Valid @RequestBody UserEntityDTO userEntityDTO, @PathVariable("email") String userEmail) {
         return userService.updateUser(userEntityDTO, userEmail);
     }
 
     @PostMapping("/login")
     public Response loginUser(@Valid @RequestBody UserEntityDTO userEntityDTO, Errors errors) {
-
         if (errors.hasErrors()) {
             return new Response("500", errors.getAllErrors().get(0).getDefaultMessage(), null);
         } else {
             return userService.loginUser(userEntityDTO);
         }
     }
+
     @GetMapping("/verify")
-    public Response verifyUser(@RequestParam("email") String email,@RequestParam("password") String password){
-        return userService.verifyUser(email, password);
+    public Response verifyUser(@RequestParam("email") String userEmail, @RequestParam("password") String userPassword) {
+        return userService.verifyUser(userEmail, userPassword);
+    }
+
+    @PostMapping("/reset")
+    public Response resetPassword(@RequestParam("email") String userEmail, @RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword) {
+        return userService.resetPassword(userEmail, oldPassword, newPassword);
     }
 }

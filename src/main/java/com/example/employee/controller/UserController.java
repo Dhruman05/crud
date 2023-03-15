@@ -1,5 +1,6 @@
 package com.example.employee.controller;
 
+import com.example.employee.dto.ResetPasswordDTO;
 import com.example.employee.dto.Response;
 import com.example.employee.dto.UserEntityDTO;
 import com.example.employee.service.UserService;
@@ -40,13 +41,18 @@ public class UserController {
         }
     }
 
-    @GetMapping("/verify")
+   /* @GetMapping("/verify")
     public Response verifyUser(@RequestParam("email") String userEmail, @RequestParam("password") String userPassword) {
         return userService.verifyUser(userEmail, userPassword);
+    }*/
+    @PostMapping("/forgot")
+    public Response forgotPassword(@RequestBody UserEntityDTO userEntityDTO){
+
+        return null;
     }
 
     @PostMapping("/reset")
-    public Response resetPassword(@RequestParam("email") String userEmail, @RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword) {
-        return userService.resetPassword(userEmail, oldPassword, newPassword);
+    public Response resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return userService.resetPassword(resetPasswordDTO);
     }
 }

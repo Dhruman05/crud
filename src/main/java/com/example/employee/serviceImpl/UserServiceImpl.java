@@ -1,5 +1,6 @@
 package com.example.employee.serviceImpl;
 
+import com.example.employee.dto.ResetPasswordDTO;
 import com.example.employee.dto.Response;
 import com.example.employee.dto.UserEntityDTO;
 import com.example.employee.entity.UserEntity;
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
         return new Response("200", "user logged in and token generated", token);
     }
 
-    @Override
+  /*  @Override
     public Response verifyUser(String userEmail, String userPassword) {
         Optional<UserEntity> existingData = userRepository.findByEmail(userEmail);
         if (existingData.isPresent()) {
@@ -79,17 +80,17 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new UserNotFoundException("User not found");
         }
-    }
+    }*/
 
     @Override
-    public Response resetPassword(String userEmail, String oldPassword, String newPassword) {
-        Optional<UserEntity> existingData = userRepository.findByEmail(userEmail);
+    public Response resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        Optional<UserEntity> existingData = userRepository.findByEmail(resetPasswordDTO.getUserEmail());
         if (existingData.isPresent()) {
             UserEntity user = existingData.get();
             BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-            boolean isPasswordMatches = bcrypt.matches(oldPassword, user.getUserPassword());
+            boolean isPasswordMatches = bcrypt.matches(resetPasswordDTO.getUserPassword(), user.getUserPassword());
             if (isPasswordMatches) {
-                user.setUserPassword(passwordEncoder.encode(newPassword));
+                user.setUserPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
                 userRepository.save(user);
                 return new Response("200", "password reset successfully", null);
             } else {
@@ -98,6 +99,22 @@ public class UserServiceImpl implements UserService {
         } else {
             return new Response("404", "user not found", null);
         }
+    }
+
+    @Override
+    public Response forgotPassword(UserEntityDTO userEntityDTO) {
+        Optional<UserEntity> existingData = userRepository.findByEmail((userEntityDTO.getUserEmail()));
+        UserEntity user = existingData.get();
+        if(existingData.isPresent()){
+
+
+
+              return new Response("200","password changed successfully",null);
+
+        }else{
+            return new Response("404","User does not exist having this email id",userEntityDTO.getUserEmail());
+        }
+
     }
 
 

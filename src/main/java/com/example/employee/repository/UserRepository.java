@@ -8,15 +8,14 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity,String> {
-    @Query(value = "SELECT * FROM user_entity WHERE user_email = :userEmail",nativeQuery = true)
+public interface UserRepository extends JpaRepository<UserEntity, String> {
+    @Query(value = "SELECT * FROM user_entity WHERE user_email = :userEmail", nativeQuery = true)
     Optional<UserEntity> findByEmail(String userEmail);
 
-    @Query(value = "SELECT * FROM user_entity WHERE user_email = :userEmail",nativeQuery = true)
+    @Query(value = "SELECT * FROM user_entity WHERE user_email = :userEmail", nativeQuery = true)
     UserEntity findByOnlyEmail(String userEmail);
-    @Query(value = "SELECT * FROM user_entity WHERE user_email=:userEmail AND user_password=:userPassword",nativeQuery = true)
-    Optional<UserEntity> findByEmailAndPassword(String userEmail,String userPassword);
 
-    @Query(value = "SELECT user_email FROM user_entity WHERE user_email=:userEmail",nativeQuery = true)
-    UserEntity findOnlyEmail(String userEmail);
+    @Query(value = "SELECT * FROM user_entity WHERE user_email=:userEmail AND user_password=:userPassword", nativeQuery = true)
+    UserEntity findByEmailAndPassword(String userEmail, String userPassword);
+
 }

@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response loginUser(UserEntityDTO userEntityDTO) {
 
-        Optional<UserEntity> existingData = userRepository.findByEmailAndPassword(userEntityDTO.getUserEmail(), userEntityDTO.getUserPassword());
-        if (!existingData.isPresent()) {
+        UserEntity existingData = userRepository.findByEmailAndPassword(userEntityDTO.getUserEmail(), userEntityDTO.getUserPassword());
+        if (existingData!=null) {
             return new Response("400", "Credentials are wrong", null);
         }
         String token = jwtUtil.generateJwt(userEntityDTO);

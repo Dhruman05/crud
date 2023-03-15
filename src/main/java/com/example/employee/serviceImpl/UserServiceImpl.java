@@ -30,8 +30,9 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = new UserEntity();
         Optional<UserEntity> existingData = userRepository.findByEmail(userEntityDTO.getUserEmail());
         if (!existingData.isPresent()) {
-            userEntity.setUserPassword(passwordEncoder.encode(userEntity.getUserPassword()));
-            BeanUtils.copyProperties(userEntityDTO, userEntity);
+            userEntity.setUserPassword(passwordEncoder.encode(userEntityDTO.getUserPassword()));
+            userEntity.setUserEmail(userEntityDTO.getUserEmail());
+            userEntity.setUserRole(userEntityDTO.getUserRole());
             userEntity.setIs_verified(false);
             userRepository.save(userEntity);
             return new Response("200", "User registered successfully", null);

@@ -49,9 +49,9 @@ public class JwtUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    public Boolean validateToken(String token, UserEntityDTO userEntityDTO) {
+    public Boolean validateToken(String token,String userName) {
         final String name = getUsernameFromToken(token);
-        return (name.equals(userEntityDTO.getUserEmail()) && !isTokenExpired(token));
+        return (name.equals(userName) && !isTokenExpired(token));
     }
 
 }

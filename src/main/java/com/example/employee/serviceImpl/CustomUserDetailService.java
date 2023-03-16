@@ -22,7 +22,7 @@ public class CustomUserDetailService implements UserDetailsService {
             userEntity = existingData;
         }
         if(userEntity == null){
-            throw new UserNotFoundException("User not found");
+            System.out.println("User not found");
         }
 
         UserDetails user = User.withUsername(userEntity.getUserEmail()).password(userEntity.getUserPassword()).authorities("EMPLOYEE").build();

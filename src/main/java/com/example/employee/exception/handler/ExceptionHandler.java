@@ -41,8 +41,12 @@ public class ExceptionHandler {
         return new Response(String.valueOf(HttpStatus.NOT_FOUND.value()),userNotFoundException.getMessage(),new ArrayList<>());
     }
 
-    public Response handleAccessDeniedException(AccessDeniedException accessDeniedException)
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Response handleInvalidTokenException(InvalidTokenException invalidTokenException)
     {
-        return new Response(String.valueOf(HttpStatus.UNAUTHORIZED.value()),accessDeniedException.getMessage(),null);
+        return new Response(String.valueOf(HttpStatus.BAD_REQUEST.value()),invalidTokenException.getMessage(),new ArrayList<>());
     }
+
 }

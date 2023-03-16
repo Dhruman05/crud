@@ -7,14 +7,21 @@ import com.example.employee.entity.UserEntity;
 import com.example.employee.exception.EmailAlreadyExistException;
 import com.example.employee.exception.UserNotFoundException;
 import com.example.employee.repository.UserRepository;
+import com.example.employee.service.EmailService;
 import com.example.employee.service.UserService;
 import com.example.employee.util.JwtUtil;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
@@ -26,8 +33,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    EmailService emailService;
+
+
     @Override
-    public Response registerUser(UserEntityDTO userEntityDTO) {
+    public Response registerUser(UserEntityDTO userEntityDTO) throws MessagingException {
         UserEntity userEntity = new UserEntity();
         Optional<UserEntity> existingData = userRepository.findByEmail(userEntityDTO.getUserEmail());
         if (!existingData.isPresent()) {
@@ -36,6 +47,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setUserRole(userEntityDTO.getUserRole());
             userEntity.setIs_verified(false);
             userRepository.save(userEntity);
+            emailService.sendVerifyEmail(userEntityDTO);
             return new Response("200", "User registered successfully", null);
         } else {
             throw new EmailAlreadyExistException("Email is already registered");
@@ -60,27 +72,24 @@ public class UserServiceImpl implements UserService {
     public Response loginUser(UserEntityDTO userEntityDTO) {
 
         UserEntity existingData = userRepository.findByEmailAndPassword(userEntityDTO.getUserEmail(), userEntityDTO.getUserPassword());
-        if (existingData!=null) {
+        if (existingData != null) {
             return new Response("400", "Credentials are wrong", null);
         }
         String token = jwtUtil.generateJwt(userEntityDTO);
         return new Response("200", "user logged in and token generated", token);
     }
 
-  /*  @Override
-    public Response verifyUser(String userEmail, String userPassword) {
-        Optional<UserEntity> existingData = userRepository.findByEmail(userEmail);
+    @Override
+    public Response verifyUser(String email) {
+        Optional<UserEntity> existingData = userRepository.findByEmail(email);
         if (existingData.isPresent()) {
-            UserEntity user = existingData.get();
-            if (user.getUserPassword().equalsIgnoreCase(userPassword)) {
-                user.setIs_verified(true);
-                userRepository.save(user);
-            }
+            existingData.get().setIs_verified(true);
+            userRepository.save(existingData.get());
             return new Response("200", "User verified successfully", null);
         } else {
             throw new UserNotFoundException("User not found");
         }
-    }*/
+    }
 
     @Override
     public Response resetPassword(ResetPasswordDTO resetPasswordDTO) {
@@ -102,20 +111,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response forgotPassword(UserEntityDTO userEntityDTO) {
-        Optional<UserEntity> existingData = userRepository.findByEmail((userEntityDTO.getUserEmail()));
+    public Response forgotPassword(String email) throws MessagingException {
+        Optional<UserEntity> existingData = userRepository.findByEmail(email);
         UserEntity user = existingData.get();
-        if(existingData.isPresent()){
-
-
-
-              return new Response("200","password changed successfully",null);
-
-        }else{
-            return new Response("404","User does not exist having this email id",userEntityDTO.getUserEmail());
+        if (existingData.isPresent()) {
+            emailService.sendResetPassword(user);
+            return new Response("200", "Email sent successfully", null);
+        } else {
+            return new Response("404", "User does not exist having this email id", user.getUserEmail());
         }
 
     }
 
+    @Override
+    public Response sendEmail(UserEntityDTO userEntityDTO) throws MessagingException {
+        Optional<UserEntity> existingData = userRepository.findByEmail(userEntityDTO.getUserEmail());
+        if (existingData.isPresent()) {
+            emailService.sendEmail(userEntityDTO);
+            return new Response("200", "email sent successfully", null);
+        } else {
+            return new Response("404", "email not found", null);
+        }
+    }
 
 }

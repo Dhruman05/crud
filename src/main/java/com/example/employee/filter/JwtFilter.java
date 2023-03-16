@@ -1,5 +1,6 @@
 package com.example.employee.filter;
 
+import com.example.employee.exception.InvalidTokenException;
 import com.example.employee.exception.UserNotFoundException;
 import com.example.employee.serviceImpl.CustomUserDetailService;
 import com.example.employee.util.JwtUtil;
@@ -36,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 userEmail = this.jwtUtil.getUsernameFromToken(jwtToken);
             } catch (Exception e) {
-                throw new UserNotFoundException("invalid token");
+                throw new InvalidTokenException("invalid token");
             }
             UserDetails userDetails = this.customUserDetailService.loadUserByUsername(userEmail);
 

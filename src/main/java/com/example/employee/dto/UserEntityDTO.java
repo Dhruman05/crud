@@ -3,6 +3,7 @@ package com.example.employee.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter

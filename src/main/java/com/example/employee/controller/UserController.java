@@ -5,6 +5,7 @@ import com.example.employee.dto.Response;
 import com.example.employee.dto.UserEntityDTO;
 import com.example.employee.service.UserService;
 import com.example.employee.util.JwtUtil;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -19,7 +20,7 @@ public class UserController {
     JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public Response registerUser(@Valid @RequestBody UserEntityDTO userEntityDTO, Errors error) {
+    public Response registerUser(@Valid @RequestBody UserEntityDTO userEntityDTO, Errors error) throws MessagingException {
         if (error.hasErrors()) {
             return new Response("500", error.getAllErrors().get(0).getDefaultMessage(), null);
         } else {
@@ -41,18 +42,25 @@ public class UserController {
         }
     }
 
-   /* @GetMapping("/verify")
-    public Response verifyUser(@RequestParam("email") String userEmail, @RequestParam("password") String userPassword) {
-        return userService.verifyUser(userEmail, userPassword);
-    }*/
-    @PostMapping("/forgot")
-    public Response forgotPassword(@RequestBody UserEntityDTO userEntityDTO){
+    @GetMapping("/verify")
+    public Response verifyUser(@RequestParam("email") String email) {
 
-        return null;
+        return userService.verifyUser(email);
+    }
+
+    @GetMapping("/forgot")
+    public Response forgotPassword(@RequestParam("userEmail") String userEmail) throws MessagingException {
+
+        return userService.forgotPassword(userEmail);
     }
 
     @PostMapping("/reset")
     public Response resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
         return userService.resetPassword(resetPasswordDTO);
+    }
+
+    @PostMapping("/email")
+    public Response sendEmail(@RequestBody UserEntityDTO userEntityDTO) throws MessagingException {
+        return userService.sendEmail(userEntityDTO);
     }
 }
